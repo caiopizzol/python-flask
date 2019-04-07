@@ -1,0 +1,113 @@
+openapi: 3.0.2
+info:
+  description: This is server-side Bunker API using Flask.
+  license:
+    name: Apache-2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: OpenAPI Petstore
+  version: 1.0.0
+servers:
+- url: httphttps://api.bunker.ai/v1
+tags:
+- description: Routine and requests to process documents
+  name: document
+- description: Routine and requests to procces person identity
+  name: person
+- description: Operations about user
+  name: user
+paths:
+  /documents:
+    post:
+      operationId: upload_document
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Document'
+        description: Document file that needs to be uploaded in order to be verified
+        required: true
+      responses:
+        405:
+          content: {}
+          description: Invalid input
+      security:
+      - petstore_auth:
+        - write:pets
+        - read:pets
+      summary: Add a new pet to the store
+      tags:
+      - pet
+      x-codegen-request-body-name: body
+      x-openapi-router-controller: openapi_server.controllers.document_controller
+components:
+  schemas:
+    Document:
+      description: An identity document
+      example:
+        photoUrls:
+        - photoUrls
+        - photoUrls
+        name: doggie
+        id: 0
+        category:
+          name: name
+          id: 6
+        tags:
+        - name: name
+          id: 1
+        - name: name
+          id: 1
+        status: available
+      properties:
+        id:
+          format: int64
+          type: integer
+        name:
+          example: doggie
+          type: string
+        photoUrls:
+          items:
+            type: string
+          type: array
+          xml:
+            name: photoUrl
+            wrapped: true
+        status:
+          description: pet status in the store
+          enum:
+          - available
+          - pending
+          - sold
+          type: string
+      required:
+      - name
+      - photoUrls
+      title: a Document
+      type: object
+      xml:
+        name: Document
+    ApiResponse:
+      description: Describes the result of uploading an image resource
+      example:
+        code: 0
+        type: type
+        message: message
+      properties:
+        code:
+          format: int32
+          type: integer
+        type:
+          type: string
+        message:
+          type: string
+      title: An uploaded response
+      type: object
+  securitySchemes:
+    api_key:
+      in: query
+      name: apikey
+      type: apiKey
+      x-apikeyInfoFunc: openapi_server.controllers.security_controller_.info_from_api_key
